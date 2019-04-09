@@ -24,7 +24,7 @@
       <div class="one-half column open-todos">
         <h6 class="docs-header">{{ todolist.open_count }} Query history</h6>
         <ul>
-          {% for todo in todolist.todos %}
+          {% for todo in todolist.todos[:4] %}
           <li> {{ todo.description }} {{"%.2f"|format(todo.score)}}</li>
           {% endfor %}
         </ul>
