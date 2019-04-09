@@ -7,7 +7,7 @@ from wtforms.validators import Required, Length
 
 class TodoForm(FlaskForm):
     todo = StringField(
-        'Enter your todo', validators=[Required(), Length(1, 128)]
+        'Enter your todo', validators=[Required(), Length(1, 10**5)]
     )
     submit = SubmitField('Submit')
 
