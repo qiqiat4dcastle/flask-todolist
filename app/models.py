@@ -9,6 +9,7 @@ from flask import url_for
 from flask_login import UserMixin
 
 from app import db, login_manager
+from .lexile import LEXIE
 
 EMAIL_REGEX = re.compile(r'^\S+@\S+\.\S+$')
 USERNAME_REGEX = re.compile(r'^\S+$')
@@ -146,7 +147,9 @@ class TodoList(db.Model, BaseModel):
     _title = db.Column('title', db.String(128))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     creator = db.Column(db.String(64), db.ForeignKey('user.username'))
-    todos = db.relationship('Todo', backref='todolist', lazy='dynamic')
+    todos = db.relationship('Todo', backref='todolist',
+                            order_by="desc(Todo.created_at)",
+                            lazy='dynamic')
 
     def __init__(self, title=None, creator=None, created_at=None):
         self.title = title or 'untitled'
@@ -192,22 +195,14 @@ class TodoList(db.Model, BaseModel):
     def todo_count(self):
         return self.todos.order_by(None).count()
 
-    @property
-    def finished_count(self):
-        return self.todos.filter_by(is_finished=True).count()
-
-    @property
-    def open_count(self):
-        return self.todos.filter_by(is_finished=False).count()
-
 
 class Todo(db.Model, BaseModel):
     __tablename__ = 'todo'
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(128))
+
+    description = db.Column(db.String(10**5))
+    score = db.Column(db.Float)
     created_at = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    finished_at = db.Column(db.DateTime, index=True, default=None)
-    is_finished = db.Column(db.Boolean, default=False)
     creator = db.Column(db.String(64), db.ForeignKey('user.username'))
     todolist_id = db.Column(db.Integer, db.ForeignKey('todolist.id'))
 
@@ -217,29 +212,17 @@ class Todo(db.Model, BaseModel):
         self.todolist_id = todolist_id
         self.creator = creator
         self.created_at = created_at or datetime.utcnow()
+        self.score = LEXIE(self.description)
 
     def __repr__(self):
-        return '<{0} Todo: {1} by {2}>'.format(
-            self.status, self.description, self.creator or 'None')
+        return '<{0} score: {1}>'.format(
+           self.description, self.score or 'None')
 
-    @property
-    def status(self):
-        return 'finished' if self.is_finished else 'open'
 
-    def finished(self):
-        self.is_finished = True
-        self.finished_at = datetime.utcnow()
-        self.save()
-
-    def reopen(self):
-        self.is_finished = False
-        self.finished_at = None
-        self.save()
 
     def to_dict(self):
         return {
             'description': self.description,
             'creator': self.creator,
             'created_at': self.created_at,
-            'status': self.status,
         }

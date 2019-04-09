@@ -46,8 +46,6 @@ class FakeGenerator(object):
                         todolist_id=todolist.id,
                         creator=todolist.creator,
                         created_at=self.generate_fake_date()).save()
-            if random.choice([True, False]):
-                todo.finished()
 
     def generate_fake_data(self, count):
         # generation must follow this order, as each builds on the previous

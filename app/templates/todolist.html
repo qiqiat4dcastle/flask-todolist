@@ -16,33 +16,19 @@
       <form method=post>
         {{ form.hidden_tag() }}
         <dl>
-          <dd>{{ form.todo(class_="u-full-width", placeholder="Enter your todo", value="", maxlength=128) }}
+          <dd>{{ form.todo(class_="u-full-width", placeholder="Enter your text", value="", maxlength=100000) }}
           <dt>{{ form.submit }}
         </dl>
       </form>
     </div>
-    <div class="row">
       <div class="one-half column open-todos">
-        <h6 class="docs-header">{{ todolist.open_count }} open</h6>
+        <h6 class="docs-header">{{ todolist.open_count }} Query history</h6>
         <ul>
           {% for todo in todolist.todos %}
-            {% if not todo.is_finished %}
-              <li><input type="checkbox" id="checkbox" data-todo-id="{{ todo.id }}"> {{ todo.description }}</li>
-            {% endif %}
+          <li> {{ todo.description }} {{"%.2f"|format(todo.score)}}</li>
           {% endfor %}
         </ul>
       </div>
-      <div class="one-half column finished-todos">
-        <h6 class="docs-header">{{ todolist.finished_count }} finished</h6>
-        <ul>
-          {% for todo in todolist.todos %}
-            {% if todo.is_finished %}
-              <li><input type="checkbox" id="checkbox" data-todo-id="{{ todo.id }}" checked="checked"> {{ todo.description }}</li>
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
   </div>
 </section>
 {% endblock %}
