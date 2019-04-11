@@ -21,12 +21,23 @@
         </dl>
       </form>
     </div>
-      <div class="one-half column open-todos">
+      <div class="column open-todos">
         <h6 class="docs-header">{{ todolist.open_count }} Query history</h6>
         <ul>
+          <table style="width:100%">
+
+          <tr>
+            <th> Content </th> <th> Score </th>
+          </tr>
+
           {% for todo in todolist.todos[:4] %}
-          <li> {{ todo.description }} {{"%.2f"|format(todo.score)}}</li>
+          <tr>
+            <th valign="top"> {{ todo.description }} </th>
+            <th valign="top"> {{"%.2f"|format(todo.score)}} </th>
+          </tr>
           {% endfor %}
+          </table>
+
         </ul>
       </div>
   </div>
